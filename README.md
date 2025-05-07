@@ -16,4 +16,4 @@ Below, you can access the prototypes. They are in order from "least polished" to
 2. [Microsoft Copilot Attempt #2](https://avo-ucsd.github.io/08-brainstorm-playground/recipe_json_test_Copilot_2.html)
 3. [Claude Attempt](https://avo-ucsd.github.io/08-brainstorm-playground/recipe_json_test_Claude.html)
 
-If you want to test loading a JSON file, there are samples available in [sample_jsons/](./sample_json/)
+If you want to test loading a JSON file, there are samples available in [sample_jsons/](https://github.com/avo-ucsd/08-brainstorm-playground/tree/main/sample_json)
