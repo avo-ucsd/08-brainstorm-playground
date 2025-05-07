@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #385d8a;
+            --secondary: #f0f5ff;
+            --text: #333;
+            --text-light: #666;
+            --border: #dae0e6;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --success: #4CAF50;
+            --danger: #f44336;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f7f9fc;
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .panels {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .panels {
+                flex-direction: row;
+            }
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+            padding: 25px;
+            flex: 1;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        h3 {
+            color: var(--text);
+            margin: 20px 0 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: var(--secondary);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        button.secondary:hover {
+            background: #e6eeff;
+        }
+
+        button.danger {
+            background: var(--danger);
+        }
+
+        button.danger:hover {
+            background: #d32f2f;
+        }
+
+        button.success {
+            background: var(--success);
+        }
+
+        button.success:hover {
+            background: #43a047;
+        }
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .file-input-container input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background: var(--secondary);
+            color: var(--primary);
+            border: 1px dashed var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-container:hover .file-input-label {
+            background: #e6eeff;
+        }
+
+        .file-name {
+            margin-top: 5px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .recipe-box {
+            border: 1px solid var(--border);
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow);
+            position: relative;
+        }
+
+        .recipe-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .recipe-header h3 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+
+        .recipe-section h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .ingredients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ingredient-item {
+            background: var(--secondary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ingredient-item button {
+            background: none;
+            color: var(--danger);
+            padding: 0;
+            font-size: 18px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .ingredient-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ingredient-input-container input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .steps-container {
+            margin-top: 15px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 12px;
+        }
+
+        .step-item textarea {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .step-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .step-actions button {
+            padding: 6px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .preview-placeholder {
+            color: var(--text-light);
+            text-align: center;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        @media (max-width: 767px) {
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .ingredient-input-container {
+                flex-direction: column;
+            }
+            
+            .step-item {
+                flex-direction: column;
+            }
+            
+            .step-actions {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Recipe Creator</h1>
+        <p>Create, edit, and save your favorite recipes</p>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Recipe Editor</h2>
+            
+            <div class="file-input-container">
+                <div class="file-input-label">
+                    <span>Choose JSON file or drop it here</span>
+                </div>
+                <input type="file" id="jsonFile" accept=".json">
+                <div class="file-name" id="fileName"></div>
+            </div>
+            
+            <label for="recipeName">Recipe Name</label>
+            <input type="text" id="recipeName" placeholder="Enter recipe name">
+            
+            <h3>Ingredients</h3>
+            <div class="ingredient-input-container">
+                <input type="text" id="ingredientInput" placeholder="Enter an ingredient">
+                <button onclick="addIngredient()" class="success">Add</button>
+            </div>
+            
+            <div class="ingredients-list" id="ingredientsList"></div>
+            
+            <h3>Steps</h3>
+            <div id="stepsContainer" class="steps-container"></div>
+            <button onclick="addStep()" class="success">Add Step</button>
+            
+            <div class="button-container">
+                <button onclick="updatePreview()" class="primary">Preview Recipe</button>
+                <button onclick="downloadJSON()" class="secondary">Download JSON</button>
+                <button onclick="clearForm()" class="danger">Clear Form</button>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Recipe Preview</h2>
+            <div class="preview-placeholder" id="previewPlaceholder">
+                Your recipe preview will appear here
+            </div>
+            <div class="recipe-box hidden" id="recipePreview">
+                <div class="recipe-header">
+                    <h3 id="preview-name">Recipe Name</h3>
+                </div>
+                
+                <div class="recipe-section">
+                    <h4>Ingredients</h4>
+                    <ul id="preview-ingredients"></ul>
+                </div>
+                
+                <div class="recipe-section">
+                    <h4>Instructions</h4>
+                    <ol id="preview-instructions"></ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">Recipe saved successfully!</div>
+
+    <script>
+        // Global variables
+        let ingredients = [];
+        let steps = [];
+        
+        // DOM loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up file input
+            const fileInput = document.getElementById('jsonFile');
+            fileInput.addEventListener('change', function() {
+                const fileName = this.files[0]?.name || 'No file selected';
+                document.getElementById('fileName').textContent = fileName;
+                if (this.files[0]) {
+                    loadJSON();
+                }
+            });
+            
+            // Set up enter key for ingredient input
+            document.getElementById('ingredientInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addIngredient();
+                }
+            });
+            
+            // Add initial step
+            addStep();
+        });
+        
+        // Add ingredient
+        function addIngredient() {
+            const input = document.getElementById('ingredientInput');
+            const value = input.value.trim();
+            
+            if (value) {
+                ingredients.push(value);
+                renderIngredients();
+                input.value = '';
+                input.focus();
+            }
+        }
+        
+        // Render ingredients list
+        function renderIngredients() {
+            const list = document.getElementById('ingredientsList');
+            list.innerHTML = '';
+            
+            ingredients.forEach((ingredient, index) => {
+                const item = document.createElement('div');
+                item.className = 'ingredient-item';
+                item.innerHTML = `
+                    <span>${ingredient}</span>
+                    <button onclick="removeIngredient(${index})">×</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        // Remove ingredient
+        function removeIngredient(index) {
+            ingredients.splice(index, 1);
+            renderIngredients();
+        }
+        
+        // Add step
+        function addStep() {
+            const stepsContainer = document.getElementById('stepsContainer');
+            const stepCount = stepsContainer.children.length + 1;
+            
+            const stepItem = document.createElement('div');
+            stepItem.className = 'step-item';
+            stepItem.innerHTML = `
+                <div class="step-number">${stepCount}</div>
+                <textarea placeholder="Describe this step"></textarea>
+                <div class="step-actions">
+                    <button onclick="moveStep(${stepCount - 1}, 'up')" class="secondary" ${stepCount === 1 ? 'disabled' : ''}>↑</button>
+                    <button onclick="moveStep(${stepCount - 1}, 'down')" class="secondary">↓</button>
+                    <button onclick="removeStep(${stepCount - 1})" class="danger">×</button>
+                </div>
+            `;
+            
+            stepsContainer.appendChild(stepItem);
+            steps.push('');
+            
+            // Focus on the new textarea
+            const newTextarea = stepItem.querySelector('textarea');
+            newTextarea.addEventListener('input', function() {
+                steps[stepCount - 1] = this.value;
+            });
+            newTextarea.focus();
+        }
+        
+        // Move step up or down
+        function moveStep(index, direction) {
+            if (direction === 'up' && index > 0) {
+                // Swap steps in array
+                [steps[index], steps[index - 1]] = [steps[index - 1], steps[index]];
+                renderSteps();
+            } else if (direction === 'down' && index < steps.length - 1) {
+                // Swap steps in array
+                [steps[index], steps[index + 1]] = [steps[index + 1], steps[index]];
+                renderSteps();
+            }
+        }
+        
+        // Remove step
+        function removeStep(index) {
+            steps.splice(index, 1);
+            renderSteps();
+        }
+        
+        // Render steps
+        function renderSteps() {
+            const stepsContainer = document.getElementById('stepsContainer');
+            stepsContainer.innerHTML = '';
+            
+            steps.forEach((step, index) => {
+                const stepItem = document.createElement('div');
+                stepItem.className = 'step-item';
+                stepItem.innerHTML = `
+                    <div class="step-number">${index + 1}</div>
+                    <textarea placeholder="Describe this step">${step}</textarea>
+                    <div class="step-actions">
+                        <button onclick="moveStep(${index}, 'up')" class="secondary" ${index === 0 ? 'disabled' : ''}>↑</button>
+                        <button onclick="moveStep(${index}, 'down')" class="secondary" ${index === steps.length - 1 ? 'disabled' : ''}>↓</button>
+                        <button onclick="removeStep(${index})" class="danger">×</button>
+                    </div>
+                `;
+                
+                stepsContainer.appendChild(stepItem);
+                
+                // Set up event listener for textarea
+                const textarea = stepItem.querySelector('textarea');
+                textarea.addEventListener('input', function() {
+                    steps[index] = this.value;
+                });
+            });
+        }
+        
+        // Update preview
+        function updatePreview() {
+            // Update steps array from textareas
+            const textareas = document.querySelectorAll('#stepsContainer textarea');
+            textareas.forEach((textarea, index) => {
+                steps[index] = textarea.value;
+            });
+            
+            const recipeName = document.getElementById('recipeName').value;
+            
+            // Show preview and hide placeholder
+            document.getElementById('previewPlaceholder').classList.add('hidden');
+            document.getElementById('recipePreview').classList.remove('hidden');
+            
+            // Update preview content
+            document.getElementById('preview-name').innerText = recipeName || 'Recipe Name';
+            
+            // Update ingredients list
+            const ingredientsList = document.getElementById('preview-ingredients');
+            ingredientsList.innerHTML = '';
+            
+            ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.innerText = ingredient;
+                ingredientsList.appendChild(li);
+            });
+            
+            // Update instructions list
+            const instructionsList = document.getElementById('preview-instructions');
+            instructionsList.innerHTML = '';
+            
+            steps.forEach(step => {
+                if (step.trim()) {
+                    const li = document.createElement('li');
+                    li.innerText = step;
+                    instructionsList.appendChild(li);
+                }
+            });
+        }
+        
+        // Download JSON
+        function downloadJSON() {
+            // Update steps array from textareas
+            const textareas = document.querySelectorAll('#stepsContainer textarea');
+            textareas.forEach((textarea, index) => {
+                steps[index] = textarea.value;
+            });
+            
+            const recipe = {
+                name: document.getElementById('recipeName').value,
+                ingredients: ingredients,
+                steps: steps.filter(step => step.trim() !== '')
+            };
+            
+            if (!recipe.name) {
+                alert('Please enter a recipe name before downloading');
+                return;
+            }
+            
+            const blob = new Blob([JSON.stringify(recipe, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${recipe.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show toast
+            showToast('Recipe saved successfully!');
+        }
+        
+        // Load JSON
+        function loadJSON() {
+            const fileInput = document.getElementById('jsonFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('No file selected!');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const recipe = JSON.parse(event.target.result);
+                    
+                    // Populate form fields
+                    document.getElementById('recipeName').value = recipe.name || '';
+                    
+                    // Populate ingredients
+                    ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+                    renderIngredients();
+                    
+                    // Populate steps
+                    steps = Array.isArray(recipe.steps) ? recipe.steps : [];
+                    renderSteps();
+                    
+                    // Update preview
+                    updatePreview();
+                    
+                    // Show toast
+                    showToast('Recipe loaded successfully!');
+                    
+                } catch (e) {
+                    alert('Invalid JSON file!');
+                    console.error(e);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Clear form
+        function clearForm() {
+            if (confirm('Are you sure you want to clear the form? All data will be lost.')) {
+                document.getElementById('recipeName').value = '';
+                document.getElementById('ingredientInput').value = '';
+                ingredients = [];
+                steps = [''];
+                renderIngredients();
+                renderSteps();
+                
+                // Reset preview
+                document.getElementById('previewPlaceholder').classList.remove('hidden');
+                document.getElementById('recipePreview').classList.add('hidden');
+                
+                // Show toast
+                showToast('Form cleared successfully!');
+            }
+        }
+        
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

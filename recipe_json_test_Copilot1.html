@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #eef2f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            width: 80%;
+        }
+        #sidebar, #preview {
+            flex: 1;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        input, textarea {
+            width: 100%;
+            margin-bottom: 12px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.2);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+        }
+        .recipe-box {
+            border: 2px solid #ddd;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+        .step-input {
+            width: 100%;
+            margin-bottom: 8px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <h2>Recipe Editor</h2>
+            <input type="file" id="jsonFile" accept=".json">
+            <button onclick="loadJSON()">Load JSON</button>
+            <br><br>
+            <input type="text" id="recipeName" placeholder="Recipe Name">
+            <textarea id="recipeIngredients" placeholder="Ingredients (comma separated)"></textarea>
+            <h3>Steps</h3>
+            <div id="steps"></div>
+            <button onclick="addStep()">Add Step</button>
+            <button onclick="updatePreview()">Update Preview</button>
+            <button onclick="downloadJSON()">Download JSON</button>
+        </div>
+
+        <!-- Live Preview -->
+        <div id="preview">
+            <h2>Recipe Preview</h2>
+            <div class="recipe-box">
+                <h3 id="preview-name">Recipe Name</h3>
+                <p><strong>Ingredients:</strong></p>
+                <ul id="preview-ingredients"></ul>
+                <p><strong>Instructions:</strong></p>
+                <ol id="preview-instructions"></ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stepsArray = [];
+
+        function addStep() {
+            const stepContainer = document.createElement("div");
+            const stepInput = document.createElement("textarea");
+            stepInput.placeholder = "Step description";
+            stepInput.classList.add("step-input");
+
+            stepContainer.appendChild(stepInput);
+            document.getElementById("steps").appendChild(stepContainer);
+        }
+
+        function updatePreview() {
+            document.getElementById("preview-name").innerText = document.getElementById("recipeName").value;
+
+            const ingredientsList = document.getElementById("recipeIngredients").value.split(",");
+            const ul = document.getElementById("preview-ingredients");
+            ul.innerHTML = "";
+            ingredientsList.forEach(ingredient => {
+                const li = document.createElement("li");
+                li.innerText = ingredient.trim();
+                ul.appendChild(li);
+            });
+
+            const ol = document.getElementById("preview-instructions");
+            ol.innerHTML = "";
+            stepsArray = Array.from(document.querySelectorAll(".step-input")).map(step => step.value);
+            stepsArray.forEach(step => {
+                const li = document.createElement("li");
+                li.innerText = step.trim();
+                ol.appendChild(li);
+            });
+        }
+
+        function downloadJSON() {
+            const recipe = {
+                name: document.getElementById("recipeName").value,
+                ingredients: document.getElementById("recipeIngredients").value.split(","),
+                steps: Array.from(document.querySelectorAll(".step-input")).map(input => input.value.trim())
+            };
+
+            const blob = new Blob([JSON.stringify(recipe, null, 2)], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "recipe.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function loadJSON() {
+            const fileInput = document.getElementById("jsonFile");
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("No file selected!");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const recipe = JSON.parse(event.target.result);
+                    document.getElementById("recipeName").value = recipe.name;
+                    document.getElementById("recipeIngredients").value = recipe.ingredients.join(", ");
+
+                    document.getElementById("steps").innerHTML = "";
+                    stepsArray = [];
+
+                    recipe.steps.forEach(step => {
+                        addStep();
+                        const stepInputs = document.querySelectorAll(".step-input");
+                        stepInputs[stepInputs.length - 1].value = step;
+                        stepsArray.push(step);
+                    });
+
+                    updatePreview();
+                } catch (e) {
+                    alert("Invalid JSON file!");
+                }
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+
+</body>
+</html>
